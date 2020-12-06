@@ -3,58 +3,71 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Serializer;
+use App\Entity\Issue;
 
 /**
- * @Route("/comic")
+ * @Route("/comics")
  */
 class ComicController extends AbstractController{
 
-	private const POSTS = [
-		[
-			'id' => 1,
-			'slug' => 'hello-world',
-			'title' => 'Hello World!'
-		],
-		[
-			'id' => 2,
-			'slug' => 'comic-issue-2',
-			'title' => 'Comic issue 2'
-		],
-		[
-			'id' => 3,
-			'slug' => 'comic-issue-3',
-			'title' => 'Comic issue 3'
-		]
-	];
-
 	/**
-	 * @Route("/", name="comic_list")
+	 * @Route("/{page}", name="comic_list", defaults={"page": 5}, requirements={"page"="\d+"})
 	 */
-	public function list()
+	public function list($page = 1, Request $request)
 	{
-		return new JsonResponse(self::POSTS);
+		$limit = $request->get('limit', 10);
+		$repository = $this->getDoctrine()->getRepository(Issue::class);
+		$items = $repository->findAll();
+		
+		return $this->json(
+			[
+				'page' => $page,
+				'limit' => $limit,
+				'data' => array_map(function(Issue $item){
+					return $this->generateUrl("comic_by_slug", ['slug' => $item->getSlug()]);
+				}, $items)
+			]
+		);
 	}
 
 	/**
-	 * @Route("/{id}", name="comic_by_id", requirements={"id"="\d+"})
+	 * @Route("/issue/{id}", name="comic_by_id", requirements={"id"="\d+"}, methods={"GET"})
 	 */
 	public function post($id)
 	{
-		return new JsonResponse(
-			self::POSTS[array_search($id, array_column(self::POSTS, 'id'))]
+		return $this->json(
+			$this->getDoctrine()->getRepository(Issue::class)->find($id)
 		);
 	}
 
 	/**
-	 * @Route("/{slug}", name="comic_by_slug")
+	 * @Route("/issue/{slug}", name="comic_by_slug", requirements={"slug"="\w+"}, methods={"GET"})
 	 */
 	public function postBySlug($slug)
 	{
-		return new JsonResponse(
-			self::POSTS[array_search($slug, array_column(self::POSTS, 'slug'))]
+		return $this->json(
+			$this->getDoctrine()->getRepository(Issue::class)->findBy(['slug'=>$slug])
 		);
+	}
+
+	/**
+	 * @Route("/add", name="comic_add", methods={"POST"})
+	 */
+	public function add(Request $request)
+	{
+		/** @var Serializer $serializer */
+		$serializer = $this->get('serializer');
+
+		$comicPost = $serializer->deserialize($request->getContent(), Issue::class, 'json');
+
+		$em = $this->getDoctrine()->getManager();
+		$em->persist($comicPost);
+		$em->flush();
+
+		return $this->json($comicPost);
 	}
 
 }
