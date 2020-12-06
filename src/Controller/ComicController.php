@@ -35,22 +35,20 @@ class ComicController extends AbstractController{
 
 	/**
 	 * @Route("/issue/{id}", name="comic_by_id", requirements={"id"="\d+"}, methods={"GET"})
+	 * @ParamConverter("post", class="App:Issue")
 	 */
-	public function post($id)
+	public function post($issue)
 	{
-		return $this->json(
-			$this->getDoctrine()->getRepository(Issue::class)->find($id)
-		);
+		return $this->json($issue);
 	}
 
 	/**
-	 * @Route("/issue/{slug}", name="comic_by_slug", requirements={"slug"="\w+"}, methods={"GET"})
+	 * @Route("/issue/{slug}", name="comic_by_slug", methods={"GET"})
+	 * @ParamConverter("post", class="App:Issue", options={"mapping": {"slug": "author"}})
 	 */
-	public function postBySlug($slug)
+	public function postBySlug($issue)
 	{
-		return $this->json(
-			$this->getDoctrine()->getRepository(Issue::class)->findBy(['slug'=>$slug])
-		);
+		return $this->json($issue);
 	}
 
 	/**

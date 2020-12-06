@@ -25,6 +25,16 @@ class Issue
     private $title;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $editor;
+
+    /**
+     * @ORM\Column(type="string", length=38)
+     */
+    private $barcode;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $slug;
@@ -43,6 +53,11 @@ class Issue
      * @ORM\Column(type="integer")
      */
     private $gcdissueid;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $price;
 
     /**
      * @ORM\Column(type="datetime")
@@ -102,6 +117,30 @@ class Issue
         return $this;
     }
 
+    public function getEditor(): ?string
+    {
+        return $this->editor;
+    }
+
+    public function setEditor(string $editor): self
+    {
+        $this->editor = $editor;
+
+        return $this;
+    }
+
+    public function getBarcode(): ?string
+    {
+        return $this->barcode;
+    }
+
+    public function setBarcode(string $barcode): self
+    {
+        $this->barcode = $barcode;
+
+        return $this;
+    }
+
     public function getGcdissueid(): ?int
     {
         return $this->gcdissueid;
@@ -110,6 +149,18 @@ class Issue
     public function setGcdissueid(int $gcdissueid): self
     {
         $this->gcdissueid = $gcdissueid;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): self
+    {
+        $this->price = $price;
 
         return $this;
     }
