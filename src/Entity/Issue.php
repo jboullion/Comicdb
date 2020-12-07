@@ -30,6 +30,12 @@ class Issue
     private $editor;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="issues")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
      * @ORM\Column(type="string", length=38)
      */
     private $barcode;
@@ -125,6 +131,25 @@ class Issue
     public function setEditor(string $editor): self
     {
         $this->editor = $editor;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     * @return User
+     */
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
