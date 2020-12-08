@@ -14,9 +14,17 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class AppFixtures extends Fixture
 {
 
+    private $passwordEncoder;
+
+    /**
+     * @var \Faker\Factory
+     */
+    private $faker;
+
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->passwordEncoder = $passwordEncoder;
+        $this->faker = \Faker\Factory::create();
     }
 
     public function load(ObjectManager $manager)
@@ -61,33 +69,25 @@ class AppFixtures extends Fixture
 
     public function loadIssues(ObjectManager $manager)
     {
-        $issue = new Issue();
-        $issue->setTitle('A Test Comic');
-        $issue->setSlug('a-test-comic');
-        $issue->setPublication(new \DateTime(date('Y-m-d H:i:s')));
-        $issue->setPublisher(26);
-        $issue->setEditor('James Boullion');
-        $issue->setUser($this->getReference('JBoullion'));
-        $issue->setBarcode('01526525485');
-        $issue->setGcdissueid('31919');
-        $issue->setPrice(26.00);
-        $issue->setCreated(new \DateTime(date('Y-m-d H:i:s')));
+        $user = $this->getReference('JBoullion');
 
-        $manager->persist($issue);
+        for($i = 0; $i < 100; $i++){
+            $issue = new Issue();
+            $issue->setTitle($this->faker->realText(30));
+            $issue->setSlug($this->faker->slug);
+            $issue->setPublication($this->faker->datetime);
+            $issue->setPublisher($this->faker->numerify('##'));
+            $issue->setEditor($this->faker->realText(30));
+            $issue->setUser($user);
+            $issue->setBarcode($this->faker->numerify('#############'));
+            $issue->setGcdissueid($this->faker->numerify('########'));
+            $issue->setPrice($this->faker->randomFloat(2, 1.00, 1000.00));
+            $issue->setCreated($this->faker->datetime);
+            
+            $this->setReference("issue_$i", $issue);
 
-        $issue = new Issue();
-        $issue->setTitle('Another Comic');
-        $issue->setSlug('another-comic');
-        $issue->setPublication(new \DateTime(date('Y-m-d H:i:s')));
-        $issue->setPublisher(36);
-        $issue->setEditor('Jordan Boullion');
-        $issue->setUser($this->getReference('KBoullion'));
-        $issue->setBarcode('03652658412');
-        $issue->setGcdissueid('35265');
-        $issue->setPrice(36.00);
-        $issue->setCreated(new \DateTime(date('Y-m-d H:i:s')));
-
-        $manager->persist($issue);
+            $manager->persist($issue);
+        }
 
         $manager->flush();
     }
@@ -95,19 +95,20 @@ class AppFixtures extends Fixture
 
     public function loadComments(ObjectManager $manager)
     {
-        $comment = new Comment();
-        $comment->setContent('I love this comic!');
-        $comment->setUser($this->getReference('JBoullion'));
-        $comment->setPublished(new \DateTime(date('Y-m-d H:i:s')));
+        $user = $this->getReference('KBoullion');
+        
+        for($i = 0; $i < 100; $i++){
+            for($j = 0; $j < rand(1,10); $j++){
+                $comment = new Comment();
+                $comment->setContent($this->faker->realText());
+                $comment->setUser($user);
+                $comment->setPublished($this->faker->datetime);
 
-        $manager->persist($comment);
+                $manager->persist($comment);
+            }
+        }
 
-        $comment = new Comment();
-        $comment->setContent('I hate this comic!');
-        $comment->setUser($this->getReference('KBoullion'));
-        $comment->setPublished(new \DateTime(date('Y-m-d H:i:s')));
-
-        $manager->persist($comment);
+        $manager->flush();
     }
 
 
