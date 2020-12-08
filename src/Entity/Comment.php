@@ -29,6 +29,7 @@ class Comment
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+    
 
     /**
      * @ORM\Column(type="datetime")
