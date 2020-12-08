@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ApiResource(
@@ -18,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  normalizationContext={"groups"={"read"}}
  * )
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("username")
+ * @UniqueEntity("email")
  */
 class User implements UserInterface
 {
@@ -46,6 +49,14 @@ class User implements UserInterface
      * )
      */
     private $password;
+    
+    /**
+     * @Assert\Expression(
+     *  "this.getPassword() === this.getConfirmPassword()",
+     *  message="Passwords do not match"
+     * )
+     */
+    private $confirmPassword;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -107,10 +118,24 @@ class User implements UserInterface
     {
         return $this->password;
     }
+    
 
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getConfirmPassword(): ?string
+    {
+        return $this->confirmPassword;
+    }
+    
+
+    public function setConfirmPassword(string $confirmPassword): self
+    {
+        $this->confirmPassword = $confirmPassword;
 
         return $this;
     }
