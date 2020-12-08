@@ -9,9 +9,16 @@ use App\Entity\Issue;
 use App\Entity\User;
 use App\Entity\Comment;
 use App\Entity\Publisher;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $this->passwordEncoder = $passwordEncoder;
+    }
+
     public function load(ObjectManager $manager)
     {
         // $product = new Product();
@@ -28,7 +35,7 @@ class AppFixtures extends Fixture
     {
         $user = new User();
         $user->setUsername('JBoullion');
-        $user->setPassword('testing');
+        $user->setPassword($this->passwordEncoder->encodePassword($user, 'password123'));
         $user->setName('James Boullion');
         $user->setEmail('jboullion83@gmail.com');
         $user->setCreated(new \DateTime(date('Y-m-d H:i:s')));
@@ -39,7 +46,7 @@ class AppFixtures extends Fixture
 
         $user = new User();
         $user->setUsername('KBoullion');
-        $user->setPassword('testing');
+        $user->setPassword($this->passwordEncoder->encodePassword($user, 'password123'));
         $user->setName('Katherine Boullion');
         $user->setEmail('katbrown83@gmail.com');
         $user->setCreated(new \DateTime(date('Y-m-d H:i:s')));
