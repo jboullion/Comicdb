@@ -9,7 +9,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *  itemOperations={"get"},
+ *  collectionOperations={"get"}
+ * )
  * @ORM\Entity(repositoryClass=IssueRepository::class)
  */
 class Issue
