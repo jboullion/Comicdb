@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\IssueRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -65,10 +67,28 @@ class Issue
      */
     private $price;
 
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="issue")
+     */
+    private $comments;
+
     /**
      * @ORM\Column(type="datetime")
      */
     private $created;
+
+
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
 
     public function getId(): ?int
     {

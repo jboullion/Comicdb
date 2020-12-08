@@ -30,6 +30,11 @@ class Comment
      */
     private $user;
     
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Issue", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $issue;
 
     /**
      * @ORM\Column(type="datetime")
@@ -80,6 +85,18 @@ class Comment
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getIssue()
+    {
+        return $this->issue;
+    }
+
+    public function setIssue(Issue $issue): self
+    {
+        $this->issue = $issue;
 
         return $this;
     }

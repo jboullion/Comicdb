@@ -103,6 +103,7 @@ class AppFixtures extends Fixture
                 $comment->setContent($this->faker->realText());
                 $comment->setUser($user);
                 $comment->setPublished($this->faker->datetime);
+                $comment->setIssue($this->getReference("issue_$i"));
 
                 $manager->persist($comment);
             }
